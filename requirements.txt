@@ -1,0 +1,9 @@
+FastAPI
+uvicorn
+Logging
+SQLAlchimy
+Pydantic
+pydantic-settings
+Docker
+
+
