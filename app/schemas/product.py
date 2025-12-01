@@ -2,7 +2,7 @@
 from pydantic import BaseModel, Field
 from enum import Enum
 from uuid import UUID, uuid4
-
+from typing import Optional
 
 class Size(Enum):
     length : str = 'length'
@@ -33,18 +33,22 @@ class ProductBase(BaseModel):
     color : int = Field(...,)
 
 
-
-class ProductCreate(BaseModel):
+class ProductCreate(ProductBase):
     pass
 
-class ProductUpdate(BaseModel):
-    pass
+class ProductUpdate(ProductBase):
+    name : Optional[str] = Field(min_length=3, max_length=128, pattern="^[A-Za-z0-9-_]+$")
+    description : Optional[str] = Field(min_length=10, max_length=256)
+    text : Optional[str] = Field(min_length=10)
+    img : Optional[str] = Field()
+    slug : Optional[str] = Field()
+    coast : Optional[float] = Field()
+    quantity : Optional[int] = Field()
+    size : Optional[int] = Field()
+    color : Optional[int] = Field()
 
-class ProductDelete(BaseModel):
-    pass
-
-class ProductResponse(BaseModel):
-    pass
+class ProductResponse(ProductBase):
+    id : str = Field(...,)
 
 
 

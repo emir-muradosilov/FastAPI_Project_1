@@ -1,5 +1,5 @@
 from sqlalchemy.orm import DeclarativeBase, mapped_column, Mapped, relationship
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey,Column, String
 import enum
 from typing import List
 from datetime import date
@@ -35,6 +35,7 @@ class Category(Base):
     name : Mapped[str] = mapped_column()
     description : Mapped[str] = mapped_column()
     img : Mapped[str] = mapped_column()
+    slug : Mapped[str] = mapped_column()
     # Python связь
     product: Mapped[List["Product"]] = relationship(back_populates="category")
 

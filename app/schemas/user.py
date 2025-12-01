@@ -52,10 +52,22 @@ class UpdateUser(UserBase):
 
 
 class DeliteUser(UserBase):
-    id : UUID = uuid4()
+    pass
 
 
 class ResponseUser(UserBase):
-    id : UUID = uuid4()
+    id : str = Field(...,)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
