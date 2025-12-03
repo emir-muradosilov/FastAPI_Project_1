@@ -1,7 +1,9 @@
-from dbconnection import db_connection
+
+from .dbconnection import db_connection
 from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
 
 
 engine = create_engine(
@@ -11,12 +13,15 @@ engine = create_engine(
     )
 
 async_engine = create_async_engine(
-    db_connection.DB_URL,
+    db_connection.async_db_url,
     echo=True,
+     future=True,
 )
 
 
 Session = sessionmaker(engine)
+Base = declarative_base()
+
 async_Session = async_sessionmaker(async_engine)
 
 
@@ -35,3 +40,5 @@ def get_db():
     finally:
         db.close()
 
+def init_db():
+    Base.metadate.create_all(bind = engine)

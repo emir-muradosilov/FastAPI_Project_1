@@ -22,9 +22,11 @@ class User(Base):
     middle_name : Mapped[str] = mapped_column() # Отчество
     telephone : Mapped[str] = mapped_column()
     email : Mapped[str] = mapped_column()
+    password : Mapped[str] = mapped_column()
     age: Mapped[int] = mapped_column()
     date_of_birth : Mapped[date] = mapped_column()
     profile : Mapped[Profile] = mapped_column(Enum(Profile))
+    
     # Python связь
     cart: Mapped[List["Cart"]] = relationship(back_populates="user")
 
