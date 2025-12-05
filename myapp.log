@@ -1,0 +1,15 @@
+2025-12-04 22:52:10,898 - asyncio - DEBUG - Using proactor: IocpProactor
+2025-12-04 23:49:39,432 - asyncio - DEBUG - Using proactor: IocpProactor
+2025-12-04 23:50:32,344 - asyncio - DEBUG - Using proactor: IocpProactor
+2025-12-04 23:50:42,593 - app.routes.router - INFO - Получены данные: item_name: string, item_id: 34234
+2025-12-05 01:50:21,214 - app.routes.router - INFO - Получены данные: item_name: string, item_id: 34234
+2025-12-05 01:53:11,007 - app.routes.router - INFO - Получены данные: item_name: string, item_id: 45435
+2025-12-05 01:53:28,830 - asyncio - DEBUG - Using proactor: IocpProactor
+2025-12-05 02:43:54,591 - asyncio - DEBUG - Using proactor: IocpProactor
+2025-12-05 02:44:08,452 - app.routes.router - INFO - Получены данные: item_name: string, item_id: 1111
+2025-12-05 03:27:57,505 - app.routes.router - INFO - Отправляем данные: item_id: 1, q: None
+2025-12-05 03:30:19,993 - app.routes.router - INFO - Отправляем данные: item_id: 1, q: Эмир
+2025-12-05 03:30:46,753 - app.routes.router - INFO - Получены данные: item_name: string, item_id: 123
+2025-12-05 03:32:44,572 - asyncio - DEBUG - Using proactor: IocpProactor
+2025-12-05 03:33:02,316 - app.routes.router - INFO - Получены данные: item_name: string, item_id: 1, текс = Emir
+2025-12-05 03:33:04,009 - app.routes.router - INFO - Получены данные: item_name: string, item_id: 1, текс = Emir
