@@ -5,6 +5,8 @@ from typing import List
 from datetime import date
 from sqlalchemy import Enum
 
+
+
 class Base(DeclarativeBase):
     pass
 
@@ -18,14 +20,14 @@ class User(Base):
     __tablename__ = 'users'
     id : Mapped[int] = mapped_column(primary_key=True)
     name : Mapped[str] = mapped_column()
-    last_name : Mapped[str] = mapped_column() # Фамилия
-    middle_name : Mapped[str] = mapped_column() # Отчество
-    telephone : Mapped[str] = mapped_column()
-    email : Mapped[str] = mapped_column()
-    password : Mapped[str] = mapped_column()
-    age: Mapped[int] = mapped_column()
-    date_of_birth : Mapped[date] = mapped_column()
-    profile : Mapped[Profile] = mapped_column(Enum(Profile))
+    last_name : Mapped[str] = mapped_column(nullable=True) # Фамилия
+    middle_name : Mapped[str] = mapped_column(nullable=True) # Отчество
+    telephone : Mapped[str] = mapped_column(nullable=True)
+    email : Mapped[str] = mapped_column(nullable=True)
+    password : Mapped[str] = mapped_column(nullable=True)
+    age: Mapped[int] = mapped_column(nullable=True)
+    date_of_birth : Mapped[date] = mapped_column(nullable=True)
+    profile : Mapped[Profile] = mapped_column(Enum(Profile), nullable=True, default='Buyer')
     
     # Python связь
     cart: Mapped[List["Cart"]] = relationship(back_populates="user")
@@ -39,7 +41,7 @@ class Category(Base):
     img : Mapped[str] = mapped_column()
     slug : Mapped[str] = mapped_column()
     # Python связь
-    product: Mapped[List["Product"]] = relationship(back_populates="category")
+    products: Mapped[List["Product"]] = relationship(back_populates="category")
 
 class Size(enum.Enum):
     length = 'length'
@@ -76,6 +78,7 @@ class Product(Base):
     # Python связь
     gallery: Mapped[List["Gallery"]] = relationship(back_populates="product")
     cart: Mapped[List["Cart"]] = relationship(back_populates="product")
+    category = relationship("Category", back_populates="products")
 
 
 class Gallery(Base):
@@ -99,4 +102,19 @@ class Cart(Base):
     product: Mapped["Product"] = relationship(back_populates="cart")
     user: Mapped["User"] = relationship(back_populates="cart")
 
+
+
+'''
+{
+"name": "dsdsdsd",
+"password": "sdsadadas",
+"last_name": "sdsadadas",
+"middle_name": "sdsadadas",
+"telephone": "sdsadadas",
+"email": "sdsa.dad@as.ru",
+"age": 15,
+"date_of_birth": "1993-09-12",
+"profile": "Seller"
+}
+'''
 

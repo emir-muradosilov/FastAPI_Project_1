@@ -4,6 +4,9 @@ from fastapi import FastAPI
 import logging
 import sys
 import datetime
+from app.auth.config import auth, setup_auth
+from app.auth.config import router as auth_router
+from app.database.dbsession import init_db
 
 # FasrAPI project
 app = FastAPI()
@@ -20,28 +23,17 @@ logging.basicConfig(
         logging.StreamHandler(sys.stdout)  # Логи в консоль
 ])
 
-logger = logging.getLogger(__name__)
+#logger = logging.getLogger(__name__)
 #logger.info(f'Logging Started %s', (datetime.datetime.now(),))
+setup_auth(app)
 
+# Создаем таблицы при старте
+init_db()
 
-# Authx autorization
-'''
-config = AuthXConfig(
-     JWT_ALGORITHM = "HS256",
-     JWT_SECRET_KEY = "SECRET_KEY",
-     JWT_TOKEN_LOCATION = ["headers"],
-     JWT_ACCESS_COOKIE_NAME = 'My cookie'
-)
-
-auth = AuthX(config=config)
-auth.handle_errors(app)
-
-'''
 
 from app.routes.router import router as urls
-# include routes
 app.include_router(urls)
-
+app.include_router(auth_router)
 
 # server uvicorn / to start from main
 if __name__ == "__main__":

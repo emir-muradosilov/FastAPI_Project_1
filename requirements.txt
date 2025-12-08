@@ -2,9 +2,10 @@ FastAPI
 uvicorn
 Logging
 SQLAlchimy
+psycopg2
 Pydantic
 pydantic-settings
 Docker
 authx
 passlib
-
+bcrypt

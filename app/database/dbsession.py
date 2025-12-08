@@ -1,10 +1,14 @@
-
-
 from sqlalchemy import create_engine
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
+#from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
-from dbconnection import db_connection
+#from sqlalchemy.ext.declarative import declarative_base
+from app.models.models import Base
+
+from app.database.dbconnection import DBConnection
+
+from app.models.models import User, Product, Category
+
+db_connection = DBConnection()
 
 engine = create_engine(
     db_connection.DB_URL,
@@ -19,7 +23,6 @@ async_engine = create_async_engine(
 )
 '''
 
-Base = declarative_base()
 
 # Создание фабрики сессий
 SessionLocal = sessionmaker(
@@ -38,5 +41,4 @@ def get_db():
 
 def init_db():
     Base.metadata.create_all(bind=engine)
-def init_db():
-    Base.metadata.create_all(bind=engine)
+
