@@ -4,7 +4,9 @@ import enum
 from typing import List
 from datetime import date
 from sqlalchemy import Enum
-
+import datetime
+from datetime import datetime, timedelta
+from enum import Enum as PyEnum
 
 
 class Base(DeclarativeBase):
@@ -31,6 +33,7 @@ class User(Base):
     
     # Python связь
     cart: Mapped[List["Cart"]] = relationship(back_populates="user")
+    token : Mapped['Token'] = relationship(back_populates='user')
 
 
 class Category(Base):
@@ -71,8 +74,8 @@ class Product(Base):
     slug : Mapped[str] = mapped_column()
     coast : Mapped[float] = mapped_column()
     quantity : Mapped[int] = mapped_column()
-    size : Mapped[Size] = mapped_column(Enum(Size))
-    color : Mapped[Color] = mapped_column(Enum(Size))
+    size: Mapped[str] = mapped_column(String(20), nullable=True)
+    color: Mapped[str] = mapped_column(String(20), nullable=True)
     # Внешний ключ
     category_id : Mapped[int] = mapped_column(ForeignKey('category.id'))
     # Python связь
@@ -102,6 +105,13 @@ class Cart(Base):
     product: Mapped["Product"] = relationship(back_populates="cart")
     user: Mapped["User"] = relationship(back_populates="cart")
 
+
+class Token(Base):
+    __tablename__='token'
+    id : Mapped[int] = mapped_column(primary_key=True)
+    token : Mapped[str] = mapped_column(nullable=False)
+    user_id : Mapped['int'] = mapped_column(ForeignKey('users.id'))
+    user: Mapped['User'] = relationship(back_populates='token')
 
 
 '''

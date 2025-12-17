@@ -13,7 +13,7 @@ db_connection = DBConnection()
 engine = create_engine(
     db_connection.DB_URL,
     pool_recycle=1800,
-    echo=True,
+    echo=False,
     )
 '''
 async_engine = create_async_engine(
