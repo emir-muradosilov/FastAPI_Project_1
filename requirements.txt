@@ -9,3 +9,5 @@ Docker
 authx
 passlib
 bcrypt
+alembic
+#pytest

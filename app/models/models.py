@@ -30,6 +30,7 @@ class User(Base):
     age: Mapped[int] = mapped_column(nullable=True)
     date_of_birth : Mapped[date] = mapped_column(nullable=True)
     profile : Mapped[Profile] = mapped_column(Enum(Profile), nullable=True, default='Buyer')
+    account_status : Mapped[bool] = mapped_column(default=True)
     
     # Python связь
     cart: Mapped[List["Cart"]] = relationship(back_populates="user")

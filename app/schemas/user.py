@@ -22,6 +22,7 @@ class UserBase(BaseModel):
     age : int = Field()
     date_of_birth : date = Field()
     profile : Profile = Field()
+    account_status : bool = Field(default=True)
 
     model_config = ConfigDict(
         # Параметры конфигурации здесь
@@ -52,9 +53,10 @@ class UpdateUser(UserBase):
     age : Optional[str]
     date_of_birth : Optional[date]
     profile : Optional[Profile]
+    account_status : Optional[bool]
 
 
-class DeliteUser(UserBase):
+class DeleteUser(UserBase):
     pass
 
 

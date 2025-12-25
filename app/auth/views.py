@@ -4,10 +4,12 @@ from fastapi import APIRouter, Depends, Response, HTTPException
 
 from app.models.models import User, Token
 from app.database.dbsession import get_db
+from app.database.dbasyncsession import async_get_db
 from sqlalchemy.orm import Session
 
 import bcrypt
 from app.schemas.user import CreateUser, LoginUser
+from sqlalchemy import delete, update
 #from app.auth.config import config
 
 from fastapi.responses import ORJSONResponse
@@ -16,6 +18,7 @@ from authx import AuthXConfig, AuthX
 
 import secrets
 
+from app.schemas.user import *
 
 logger = logging.getLogger(__name__)
 
@@ -153,5 +156,20 @@ async def registration(
             status_code=500,
             detail="Внутренняя ошибка сервера при регистрации"
         )
-        
 
+
+@router.post('/user/{user_id}/deactivate')
+async def inactive(user_id, db:Session = Depends(async_get_db)) -> bool:
+    try:
+        user_update_status = update(User).where(User.id == user_id).values(account_status = False).returning(User.account_status)
+        res = await db.execute(user_update_status)
+        db.commit()
+        return res
+    except:
+        raise (f'Не получилось обновить статус аккаунта пользователя!')
+
+
+@router.delete('/user/{user_id}/deactivate', response_model=DeleteUser)
+async def inactive():
+    user_id : int
+    return inactive(user_id)
