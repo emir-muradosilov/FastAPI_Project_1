@@ -1,14 +1,14 @@
 
 import logging
-from fastapi import APIRouter, Depends, Response, HTTPException
+from fastapi import APIRouter, Depends, Response, HTTPException, status
 
-from app.models.models import User, Token
+from app.models.models import User, Token, Product, Category
 from app.database.dbsession import get_db
 from app.database.dbasyncsession import async_get_db
 from sqlalchemy.orm import Session
 
 import bcrypt
-from app.schemas.user import CreateUser, LoginUser
+from app.schemas.user import CreateUser, LoginUser, UpdateUser
 from sqlalchemy import delete, update
 #from app.auth.config import config
 
@@ -19,6 +19,7 @@ from authx import AuthXConfig, AuthX
 import secrets
 
 from app.schemas.user import *
+from app.schemas.product import *
 
 logger = logging.getLogger(__name__)
 
@@ -65,7 +66,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     )
 
 @router.post('/login')
-async def login(
+async def login_user(
     response: Response,
     user_data : LoginUser,
     db : Session = Depends(get_db),
@@ -109,7 +110,7 @@ def hash_password(password: str) -> str:
     return hashed.decode('utf-8')
 
 @router.post('/registration')
-async def registration(
+async def registration_user(
 #    response: Response,
     user_data: CreateUser,
 #    password: str,
@@ -159,7 +160,7 @@ async def registration(
 
 
 @router.post('/user/{user_id}/deactivate')
-async def inactive(user_id, db:Session = Depends(async_get_db)) -> bool:
+async def inactive_user(user_id : int, db:Session = Depends(async_get_db)) -> bool:
     try:
         user_update_status = update(User).where(User.id == user_id).values(account_status = False).returning(User.account_status)
         res = await db.execute(user_update_status)
@@ -169,7 +170,50 @@ async def inactive(user_id, db:Session = Depends(async_get_db)) -> bool:
         raise (f'Не получилось обновить статус аккаунта пользователя!')
 
 
-@router.delete('/user/{user_id}/deactivate', response_model=DeleteUser)
-async def inactive():
-    user_id : int
-    return inactive(user_id)
+@router.delete('/user/delete', response_model=dict)
+async def delete_user(user_id: int, db : Session = Depends(get_db)):
+    try:
+        select_user = db.query(User).filter(User.id == user_id).first()
+        if not select_user:
+            raise (f'Произошла ошибка при выполнении поиска пользователя')
+        
+        user_delete = delete(User).where(User.id == user_id)
+        db.execute(user_delete)
+        db.commit()
+        return {"message": f"Пользователь с ID {user_id} успешно удален"}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f'Произошла ошибка при выполнении удаления пользователя: {str(e)}')
+    
+
+@router.patch('user/update', response_model=ResponseUser)
+async def update_user(id:int, user_date : UpdateUser, db:Session=Depends(get_db)):
+    try:
+        user = db.query(User).filter(User.id == id).first()
+        if not user:
+            raise HTTPException(status_code=404, detail='Пользователь не найден!')
+        update_date = user_date.model_dump(exclude_unset=True)
+
+        update_date.pop('id', None)
+        update_date.pop('account_status', None)
+        update_date.pop('password', None)
+
+        if not update_date:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail='Нет данных для обновления'
+            )
+
+        for field, value in update_date.items():
+            setattr(user, field, value)
+        db.commit()
+        db.refresh(user)
+        return user
+    
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail=f'Ошибка при обновлении данных пользователя {e}')
+

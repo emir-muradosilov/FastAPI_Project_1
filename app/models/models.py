@@ -33,8 +33,8 @@ class User(Base):
     account_status : Mapped[bool] = mapped_column(default=True)
     
     # Python связь
-    cart: Mapped[List["Cart"]] = relationship(back_populates="user")
-    token : Mapped['Token'] = relationship(back_populates='user')
+    cart: Mapped[List["Cart"]] = relationship(back_populates="user", cascade="all, delete-orphan", passive_deletes=True)
+    token : Mapped['Token'] = relationship(back_populates='user', cascade="all, delete-orphan", passive_deletes=True)
 
 
 class Category(Base):
@@ -100,8 +100,8 @@ class Cart(Base):
     id : Mapped[int] = mapped_column(primary_key=True)
     quantity: Mapped[int] = mapped_column(default=1)  # Количество товара в корзине
     # Внешний ключ
-    product_id : Mapped[int] = mapped_column(ForeignKey('products.id'))
-    user_id : Mapped[int] = mapped_column(ForeignKey('users.id'))
+    product_id : Mapped[int] = mapped_column(ForeignKey('products.id', ondelete='CASCADE'))
+    user_id : Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'))
     # Python связь
     product: Mapped["Product"] = relationship(back_populates="cart")
     user: Mapped["User"] = relationship(back_populates="cart")
@@ -111,7 +111,8 @@ class Token(Base):
     __tablename__='token'
     id : Mapped[int] = mapped_column(primary_key=True)
     token : Mapped[str] = mapped_column(nullable=False)
-    user_id : Mapped['int'] = mapped_column(ForeignKey('users.id'))
+
+    user_id : Mapped['int'] = mapped_column(ForeignKey('users.id', ondelete = 'CASCADE'))
     user: Mapped['User'] = relationship(back_populates='token')
 
 
@@ -127,5 +128,17 @@ class Token(Base):
 "date_of_birth": "1993-09-12",
 "profile": "Seller"
 }
-'''
 
+{
+"name": "Иван",
+"password": "sdsadadas",
+"last_name": "Иванов",
+"middle_name": "Иванович",
+"telephone": "+79991234567",
+"email": "ivan@example.com",
+"age": 25,
+"date_of_birth": "1998-05-15",
+"profile": "Seller"
+}
+
+'''

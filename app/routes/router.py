@@ -124,7 +124,6 @@ async def create_product(
         )
 
 
-
 # Тестовые функции
 @router.get("/items/{item_id}")
 async def read_item(item_id: int, q: Optional[str] = None):
