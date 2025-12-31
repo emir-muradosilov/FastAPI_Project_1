@@ -6,22 +6,22 @@ from typing import Optional
 from enum import Enum as PyEnum
 
 class Size(str, PyEnum):
-    length = 'length'
-    width ='width'
-    height = 'height'
-    weight = 'weight'
+    length : str = 'length'
+    width : str ='width'
+    height : str = 'height'
+    weight : str = 'weight'
 
 class Color(str, PyEnum):
-    red = 'Red'
-    orange = 'Orange'
-    yellow = 'Yellow'
-    green = 'Green'
-    blue = 'Blue'
-    purple = 'Purple'
-    gradient = 'Gradient'
-    multicolor = 'Multicolor'
+    red : str = 'Red'
+    orange : str = 'Orange'
+    yellow : str = 'Yellow'
+    green : str = 'Green'
+    blue : str = 'Blue'
+    purple : str = 'Purple'
+    gradient : str = 'Gradient'
+    multicolor : str = 'Multicolor'
 
-class ProductBase(BaseModel):
+class ProductCreate(BaseModel):
 #    id : int = Field(...,)
     name : str= Field(..., min_length=3, max_length=128)
     description : str = Field(..., max_length=256)
@@ -75,22 +75,32 @@ class ProductBase(BaseModel):
         return v
 
 
-class ProductCreate(ProductBase):
-    pass
-
-class ProductUpdate(ProductBase):
-    name : Optional[str] = Field(min_length=3, max_length=128)
-    description : Optional[str] = Field(max_length=256)
-    text : Optional[str] = Field(max_length= 512)
-    img : Optional[str] = Field()
+class ProductUpdate(BaseModel):
+    name : Optional[str] = None
+    description : Optional[str] = None
+    text : Optional[str] = None
+    img : Optional[str] = None
 #    slug : Optional[str] = Field()
-    coast : Optional[float] = Field()
-    quantity : Optional[int] = Field()
-    size : Optional[Size] = Field()
-    color : Optional[Color] = Field()
+    coast : Optional[float] = None
+    quantity : Optional[int] = None
+    size : Optional[Size] = None
+    color : Optional[Color] = None
 
-class ProductResponse(ProductBase):
-    id : str = Field(...,)
+    class Config:
+        from_attributes = True
+
+
+class ProductResponse(BaseModel):
+    id : int
+    name : Optional[str] = None
+    description : Optional[str] = None
+    text : Optional[str] = None
+    img : Optional[str] = None
+#    slug : Optional[str] = Field()
+    coast : Optional[float] = None
+    quantity : Optional[int] = None
+    size : Optional[Size] = None
+    color : Optional[Color] = None
 
 
 
