@@ -1,110 +1,19 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 import logging
-from pydantic import BaseModel
-from typing import Optional
 from app.database.dbsession import get_db
 from app.models.models import Product, Category
 from slugify import slugify
-from app.schemas.category import CategoryCreate, CategoryUpdate, CategoryResponse
 from app.schemas.product import ProductCreate, ProductResponse, ProductUpdate
 from enum import Enum
 from sqlalchemy import delete, func
-
+from app.services.services import _slug_creator 
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix='', tags=['Router'])
+router = APIRouter(prefix='/Product', tags=['Product'])
 
-class Item(BaseModel):
-    id : int 
-    name : str
-    is_offer : Optional[bool] = True
 
-# ДОБАВЬТЕ для теста (удалите потом):
-@router.get("/")
-async def test_root():
-    logger.info("Главная страница")
-    return {"message": "API работает!", "categories": "/categories"}
-
-async def slug_creator(name:str, db_table_name, db:Session=Depends(get_db)):
-    try:
-        slug = '0000'
-        slug_count = db.query(func.count(db_table_name.id)).filter(db_table_name.slug == name).scalar()
-        
-        if not slug_count:
-#            for i in range(0000,9999):
-#                slug_all = str(name)+'-'+str(i)
-#            if db.query(db_table_name).filter(db_table_name.slug == slug_all).first():
-            return 0
-        return int(slug_count)+1
-    except Exception as e:
-        raise 'Ошибка при обращении к БД для формирования slug'
-
-@router.post('/create_category', response_model=CategoryResponse)
-async def create_category(
-    category_data : CategoryCreate,
-    db : Session = Depends(get_db)
-    ):
-
-    slug_count = await slug_creator(category_data.name, Category, db)
-    slug = str(slugify(category_data.name))+'-'+str(slug_count)
-
-    uniq_category = db.query(Category).filter(Category.name == category_data.name).first()
-
-    if uniq_category is not None:
-        raise HTTPException(
-                status_code=400,
-                detail=f"Категория '{category_data.name}' уже существует (ID: {uniq_category.id})"
-            ) 
-    category = Category(
-        name = category_data.name,
-        description = category_data.description,
-        img = category_data.img,
-        slug = slug
-    )
-    db.add(category)
-    db.commit()
-    db.refresh(category)
-    return category
-
-@router.patch('/update', response_model= CategoryResponse)
-async def update_category(id:int, category_data: CategoryUpdate, db:Session=Depends(get_db)):
-    try:
-        category = db.query(Category).filter(Category.id == id).first()
-
-        if not category:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f'Категория не найдена')
-        
-        category_update_data = category_data.model_dump(exclude_unset=True)
-        if not category_update_data:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f'Нет данных для обноления')
-        
-        for key,value in category_update_data.items():
-            setattr(category, key,value)
-
-        db.add(category)
-        db.commit()
-        db.refresh(category)
-        return category
-    except Exception as e:
-        db.rollback()
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f'Ошибка при редактировании данных {e}')
-
-@router.delete('/delete_category', response_model=dict)
-async def delete_category(id: int, db:Session=Depends(get_db)):
-    try:
-        category = db.query(Category).filter(Category.id == id).first()
-        if not category:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f'Ошибка категория не найдена')
-        category_delete = delete(Category).where(Category.id == id)
-        db.execute(category_delete)
-        db.commit()
-
-        return {'message': 'Данная категория успешно удалена'}
-    
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f'Ошибка при удалении категории {e}')
 
 @router.post('/create_product', response_model=ProductResponse)
 async def create_product(
@@ -127,7 +36,7 @@ async def create_product(
             )
         
         # 2. Генерируем slug
-        slug_count = await slug_creator(product_data.name, Product)
+        slug_count = await _slug_creator(product_data.name, Product)
         slug = str(slugify(product_data.name))+'-'+str(slug_count)
         
         # 3. Проверяем уникальность slug (и товара)
@@ -220,17 +129,3 @@ async def delete_product(id:int, db:Session = Depends(get_db)):
 
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f'Ошибка при удалении товара {e}')
-
-
-# Тестовые функции
-@router.get("/items/{item_id}")
-async def read_item(item_id: int, q: Optional[str] = None):
-    logger.info("Отправляем данные: item_id: %s, q: %s", item_id, q)
-    return {"item_id": item_id, "q": q}
-
-@router.put("/items/{item_id}")
-async def update_item(item_id: int, item: Item, q: Optional[str] = None):
-    logger.info("Получены данные: item_name: %s, item_id: %s, текс = %s", item.name, item_id, q)
-    return {"item_name": item.name, "item_id": item_id, 'Текст': q }
-
-
