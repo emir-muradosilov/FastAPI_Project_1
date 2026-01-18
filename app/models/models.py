@@ -3,7 +3,7 @@ from sqlalchemy import ForeignKey,Column, String
 import enum
 from typing import List
 from datetime import date
-from sqlalchemy import Enum
+from sqlalchemy import Enum, Text
 import datetime
 from datetime import datetime, timedelta
 from enum import Enum as PyEnum
@@ -21,12 +21,13 @@ class Profile(enum.Enum):
 class User(Base):
     __tablename__ = 'users'
     id : Mapped[int] = mapped_column(primary_key=True)
+    login : Mapped[str] = mapped_column(nullable=True)
     name : Mapped[str] = mapped_column()
     last_name : Mapped[str] = mapped_column(nullable=True) # Фамилия
     middle_name : Mapped[str] = mapped_column(nullable=True) # Отчество
     telephone : Mapped[str] = mapped_column(nullable=True)
     email : Mapped[str] = mapped_column(nullable=True)
-    password : Mapped[str] = mapped_column(nullable=True)
+    password : Mapped[str] = mapped_column(Text, nullable=True)
     age: Mapped[int] = mapped_column(nullable=True)
     date_of_birth : Mapped[date] = mapped_column(nullable=True)
     profile : Mapped[Profile] = mapped_column(Enum(Profile), nullable=True, default='Buyer')
@@ -140,5 +141,10 @@ class Token(Base):
 "date_of_birth": "1998-05-15",
 "profile": "Seller"
 }
+
+
+
+
+
 
 '''

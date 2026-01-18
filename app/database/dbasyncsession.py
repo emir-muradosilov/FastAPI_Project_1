@@ -8,33 +8,26 @@ dbconnection = DBAsyncConnect()
 
 async_engine = create_async_engine(
     dbconnection.ASYNC_DB_URL,
-    pool_pre_ping=True,
-    future = True,
+#    pool_pre_ping=True,
+ #   future = True,
     echo = False,
-    pool_recycle=3600,
+ #   pool_recycle=3600,
     )
 
 
 # Создание фабрики сессий
-AsyncSessionLocal = async_sessionmaker(
-    autocommit=False,
-    autoflush=False,
-#    bind=async_engin,
-    bind=async_engine,
-    class_=AsyncSession,
-    expire_on_commit=False,
-)
+AsyncSessionLocal = async_sessionmaker[AsyncSession](async_engine, expire_on_commit=False)
 
 # Зависимость для получения сессии
 async def async_get_db():
     async with AsyncSessionLocal() as session:
-        try:
+ #       try:
             yield session
-            await session.commit()  # Автоматический коммит при успехе
-        except Exception:
-            await session.rollback()  # Откат при ошибке
-            raise
-        finally:
+#            await session.commit()  # Автоматический коммит при успехе
+#        except Exception:
+#            await session.rollback()  # Откат при ошибке
+#            raise
+#        finally:
             await session.close()
 
 

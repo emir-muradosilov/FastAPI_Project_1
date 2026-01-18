@@ -33,11 +33,12 @@ from app.auth.demo_auth.views import router as demo_auth
 from app.auth.oath2.auth import router as auth
 from app.routes.category import router as category_router
 from app.routes.product import router as product_router
+from app.auth.auth_2.views import router as auth_2
 app.include_router(auth)
 #app.include_router(urls)
 app.include_router(auth_router)
 app.include_router(demo_auth)
-
+app.include_router(auth_2)
 app.include_router(category_router)
 app.include_router(product_router)
 

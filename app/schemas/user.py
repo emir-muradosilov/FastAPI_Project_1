@@ -42,6 +42,7 @@ def chek_valid_date(clc, date_of_birth: date):
 
 class CreateUser(BaseModel):
     name : str = Field(...,)
+    login:str = Field(...,)
     password : str = Field(...,)
     last_name : str = Field() # Фамилия
     middle_name : str = Field() # Отчество
@@ -73,6 +74,7 @@ class UpdateUser(BaseModel):
 class ResponseUser(BaseModel):
     id: int
     name : str
+    login:str
 #    password : str = Field(...,)
     last_name : Optional[str] = None
     middle_name : Optional[str] = None # Отчество
@@ -87,8 +89,9 @@ class ResponseUser(BaseModel):
 
 
 class LoginUser(BaseModel):
-    name: str = Field(..., min_length=3)
-    password: str = Field(..., min_length=8)
+    
+    name: str = Field(..., min_length=2)
+    password: str = Field(..., min_length=2)
 
     model_config = ConfigDict(
     json_schema_extra={
